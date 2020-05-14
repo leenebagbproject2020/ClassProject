@@ -1,0 +1,102 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+{{clas.name}}
+{% endblock %}
+
+{% block content %}
+
+{% include "navbar.html" %}
+
+  {% if error %}
+      <p class=error><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+  <h4>Student Roster</h4>
+  <table class="table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Assignment Name</th>
+                <th>Grade</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+            <tr>
+                <td>{{grade.Student.first_name}} {{grade.Student.last_name}}</td>
+                <td>{{grade.Assignment.name}}</td>
+                <td>{{grade.Grade.grade}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<br/><br/><br/>
+    <h4>Students attending this class</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Student Id</th>
+                <th>Grades</th>
+                <th>Remove</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for student in clas.students %}
+            <tr>
+                <td>{{student.first_name}} {{student.last_name}}</td>
+                <td>{{student.student_id}}</td>
+                <td><a href="/{{clas.id}}/{{student.id}}/">Grades</a></td>
+                <td><form method="POST" action="/{{clas.id}}/deletestudent/">
+       <input type="hidden" value="{{student.id}}" name="student_id">
+        <input type="submit" value="Delete">
+      </form></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<form class="form-inline" method="POST" action="/{{clas.id}}/addstudent/">
+  <div class="form-group mx-sm-3 mb-2">
+      <label for="student_id">Add Student &nbsp;&nbsp;</label>
+    <input type="text" class="form-control" id="student_id" name="student_id" required="required" placeholder="Student Id">
+  </div>
+  <button type="submit" class="btn btn-primary mb-2", value="Add">Add</button>
+</form>
+
+<br/>
+<br/>
+<br/>
+
+  <h4>Assignments in this class</h4>
+<table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Get Grades</th>
+                <th>Remove</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for assignment in clas.assignments %}
+            <tr>
+                <td>{{assignment.name}}</td>
+                <td>Get Grades</td>
+                <td>
+              <form method="POST" action="/{{clas.id}}/deleteassignment/">
+               <input type="hidden" value="{{assignment.id}}" name="id">
+                <input type="submit" value="Delete">
+              </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<form class="form-inline" method="POST" action="/{{clas.id}}/addassignment/">
+  <div class="form-group mx-sm-3 mb-2">
+      <label for="name">Add Assignment &nbsp;&nbsp;</label>
+    <input type="text" class="form-control" id="name" name="name" required="required" placeholder="Name">
+  </div>
+  <button type="submit" class="btn btn-primary mb-2" value="Add">Add</button>
+</form>
+{% endblock %}
