@@ -1,0 +1,35 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}
+GradeBook
+{% endblock %}
+
+{% block content %}
+{% include "navbar.html" %}
+
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Assignment Name</th>
+        <th>Grade</th>
+    <tr>
+    </thead>
+    <tbody>
+    {% for grade in grades %}
+    <tr>
+        <td>{{grade.Assignment.name}}</td>
+        <td>
+            <form method="POST" action="/{{clas.id}}/{{student.id}}/">
+                <input type="hidden" value="{{grade.Grade.id}}" name="grade_id">
+                <input type="text" name="grade" required="required" value="{{grade.Grade.grade}}">
+                <input type="submit" value="Update">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
