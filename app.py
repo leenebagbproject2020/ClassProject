@@ -57,7 +57,7 @@ class User(db.Model):
 
 
 
-
+#Emmanuel Neba
 class Student(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -77,7 +77,7 @@ class Student(db.Model):
 
 
 
-
+#Emmanuel Neba
 class Class(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -93,7 +93,7 @@ class Class(db.Model):
 
 
 
-
+#Emmanuel Neba
 class Assignment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -107,7 +107,7 @@ class Assignment(db.Model):
 
 
 
-
+#Emmanuel Neba
 class Grade(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -123,7 +123,7 @@ class Grade(db.Model):
 
 
 
-
+#Kang Lee
 def login_required(f):
 
     @wraps(f)
@@ -143,7 +143,7 @@ def login_required(f):
     return wrap
 
 
-
+#Kang Lee
 @app.route("/register/", methods=['POST', 'GET'])
 
 def register():
@@ -175,7 +175,7 @@ def register():
 
 
 
-
+#Kang Lee
 @app.route("/login/", methods=['GET', 'POST'])
 
 def login():
@@ -201,7 +201,7 @@ def login():
     return render_template("login.html", error=error)
 
 
-
+#Kang Lee
 @app.route("/logout/")
 
 def logout():
@@ -211,7 +211,7 @@ def logout():
     return redirect("/login/")
 
 
-
+#Kang Lee
 @app.route("/", methods=["GET"])
 
 @login_required
@@ -225,7 +225,7 @@ def home(error=None):
     return render_template("home.html", classes=classes, students=students, error=error)
 
 
-
+#Kang Lee
 @app.route("/", methods=["POST"])
 
 @login_required
@@ -251,7 +251,7 @@ def add_class():
 
 
 
-
+#Kang Lee
 @app.route("/<id>/", methods=["GET"])
 
 @login_required
@@ -279,7 +279,7 @@ def get_class(id, error=None):
 
 
 
-
+#Kang Lee
 @app.route("/<id>/addstudent/", methods=["POST"])
 
 @login_required
@@ -360,7 +360,7 @@ def add_assignment_to_class(id):
 
 
 
-
+#Emmanuel Neba
 @app.route("/<id>/deleteassignment/", methods=["POST"])
 @login_required
 def delete_assignment_from_class(id):
@@ -375,7 +375,7 @@ def delete_assignment_from_class(id):
 
 
 
-
+#Kang Lee
 @app.route("/student/", methods=["POST"])
 @login_required
 def add_student():
@@ -393,7 +393,7 @@ def add_student():
     db.session.commit()
     return home()
 
-
+#Kang Lee
 @app.route("/student/<id>/", methods=["POST"])
 @login_required
 def update_student(id):
@@ -404,7 +404,7 @@ def update_student(id):
 
     return redirect("/")
 
-
+#Kang Lee
 @app.route("/student/<id>/delete/", methods=["POST"])
 @login_required
 def delete_student(id):
@@ -413,7 +413,7 @@ def delete_student(id):
     db.session.commit()
     return redirect("/")
 
-
+#Emmanuel Neba
 @app.route("/<id>/<stdid>/", methods=["GET"])
 @login_required
 def get_student_grades(id, stdid):
@@ -431,7 +431,7 @@ def get_student_grades(id, stdid):
 
 
 
-
+#Emmanuel Neba
 @app.route("/<id>/<stdid>/", methods=["POST"])
 @login_required
 def update_student_grades(id, stdid):
