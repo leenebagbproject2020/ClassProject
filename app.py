@@ -1,47 +1,28 @@
 import os
 
 
-
 from flask import Flask, render_template, request, redirect, session, flash
-
 from flask_bootstrap import Bootstrap
-
 from functools import wraps
-
-
-
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_migrate import Migrate
 
 
-
 project_dir = os.path.dirname(os.path.abspath(__file__))
-
 database_file = "sqlite:///{}".format(os.path.join(project_dir, "gradebook.db"))
 
 
-
 app = Flask(__name__)
-
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 
 
 
 bootstrap = Bootstrap(app)
-
 db = SQLAlchemy(app)
-
 migrate = Migrate(app, db)
-
-
-
 student_identifier = db.Table('student_identifier',
-
                               db.Column('class_id', db.Integer, db.ForeignKey('class.id')),
-
                               db.Column('student_id', db.Integer, db.ForeignKey('student.id'))
-
                               )
 
 
@@ -49,9 +30,7 @@ student_identifier = db.Table('student_identifier',
 
 
 class User(db.Model):
-
     username = db.Column(db.String(80), primary_key=True, unique=True)
-
     password = db.Column(db.String(80), nullable=False)
 
 
@@ -59,19 +38,12 @@ class User(db.Model):
 
 #Emmanuel Neba
 class Student(db.Model):
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    first_name = db.Column(db.String(80), nullable=False)
-
-    last_name = db.Column(db.String(80), nullable=True)
-
-    student_id = db.Column(db.String(80), nullable=False, unique=True)
-
-    student_major = db.Column(db.String(80), nullable=True)
-
-    email = db.Column(db.String(80), nullable=True)
-
+    first_name = db.Column(db.String(120), nullable=False)
+    last_name = db.Column(db.String(120), nullable=True)
+    student_id = db.Column(db.String(120), nullable=False, unique=True)
+    student_major = db.Column(db.String(120), nullable=True)
+    email = db.Column(db.String(120), nullable=True)
     grades = db.relationship('Grade', backref='student', lazy=True)
 
 
@@ -79,15 +51,10 @@ class Student(db.Model):
 
 #Emmanuel Neba
 class Class(db.Model):
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    name = db.Column(db.String(80), nullable=False, unique=True)
-
+    name = db.Column(db.String(100), nullable=False, unique=True)
     students = db.relationship("Student",
-
                                secondary=student_identifier)
-
     assignments = db.relationship('Assignment', backref='class', lazy=True)
 
 
@@ -95,13 +62,12 @@ class Class(db.Model):
 
 #Emmanuel Neba
 class Assignment(db.Model):
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    name = db.Column(db.String(80), nullable=False, unique=True)
-
+    
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'), nullable=False)
-
+    
     grades = db.relationship('Grade', backref='assignment', lazy=True)
 
 
@@ -109,15 +75,10 @@ class Assignment(db.Model):
 
 #Emmanuel Neba
 class Grade(db.Model):
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
     grade = db.Column(db.Integer)
-
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
-
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
-
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'), nullable=False)
 
 
@@ -147,29 +108,17 @@ def login_required(f):
 @app.route("/register/", methods=['POST', 'GET'])
 
 def register():
-
     error = None
-
     if request.method == 'POST':
-
         user = User.query.filter_by(username=request.form['username']).first()
-
         if user is not None:
-
             error = "Username already exist"
-
             return render_template("register.html", error=error)
-
         else:
-
             user = User(username=request.form['username'], password=request.form['password'])
-
             db.session.add(user)
-
             db.session.commit()
-
             return render_template("login.html", error=error)
-
     return render_template("register.html", error=error)
 
 
@@ -213,15 +162,10 @@ def logout():
 
 #Kang Lee
 @app.route("/", methods=["GET"])
-
 @login_required
-
 def home(error=None):
-
     classes = Class.query.all()
-
     students = Student.query.all()
-
     return render_template("home.html", classes=classes, students=students, error=error)
 
 
@@ -231,22 +175,14 @@ def home(error=None):
 @login_required
 
 def add_class():
-
     clas = Class.query.filter_by(name=request.form.get("name")).first()
-
-
-
     if clas:
-
         return home(error="Class with same name exists")
-
     new_class = Class(name=request.form.get("name"))
-
     db.session.add(new_class)
-
     db.session.commit()
-
-    return home()
+   
+  return home()
 
 
 
@@ -279,47 +215,32 @@ def get_class(id, error=None):
 
 
 
-#Kang Lee
+#Kang Lee - This is when add students.
 @app.route("/<id>/addstudent/", methods=["POST"])
 
 @login_required
-
 def add_student_to_class(id):
-
     cl = Class.query.filter_by(id=id).first()
 
 
-
     student_id = request.form.get("student_id")
-
     student = Student.query.filter_by(student_id=student_id).first()
 
-
-
     if not student:
-
         return get_class(id, error="Student does not exist")
 
-
-
     if student in cl.students:
-
         return get_class(id, error="Student already added to class")
 
 
-
     cl.students.append(student)
-
     for assignment in Assignment.query.filter_by(class_id=id).all():
-
-        db.session.add(Grade(assignment_id=assignment.id, student_id=student.id, class_id=id, grade=0))
-
+    db.session.add(Grade(assignment_id=assignment.id, student_id=student.id, class_id=id, grade=0))
     db.session.commit()
-
     return redirect("/" + id + "/")
 
 
-
+# This is the page with grade
 @app.route("/<id>/deletestudent/", methods=["POST"])
 @login_required
 def delete_student_from_class(id):
@@ -337,7 +258,7 @@ def delete_student_from_class(id):
     return redirect("/" + id + "/")
 
 
-
+# This is the page with assignments
 @app.route("/<id>/addassignment/", methods=["POST"])
 @login_required
 def add_assignment_to_class(id):
